@@ -7,17 +7,12 @@ import os
 
 class CppTOMLConan(ConanFile):
     name = "cpptoml"
-    version = "master"  # Last version is v0.4.0 from Feb 2015 (asking for new revision: https://github.com/skystrife/cpptoml/issues/42)
+    version = "0.1.1"
     url = "https://github.com/bincrafters/conan-cpptoml"
-    description = "cpptoml is a header-only library for parsing TOML "
-
-    # Indicates License type of the packaged library
+    description = "cpptoml is a header-only library for parsing TOML"
+    topics = ("toml")
     license = "MIT"
-
-    # Packages the license for the conanfile.py
     exports = ["LICENSE.md"]
-
-    # Remove following lines if the target lib does not use cmake.
     exports_sources = ["CMakeLists.txt"]
     generators = "cmake"
 
@@ -31,16 +26,13 @@ class CppTOMLConan(ConanFile):
     build_subfolder = "build_subfolder"
 
     def source(self):
-        source_url = "https://github.com/skystrife/cpptoml"
-        tools.get("{0}/archive/{1}.tar.gz".format(source_url, self.version))
-        extracted_dir = self.name + "-" + self.version
-        
-        tools.replace_in_file("{0}/CMakeLists.txt".format(extracted_dir),
+        source_url = "https://github.com/skystrife/cpptoml/archive/v{}.tar.gz".format(self.version)
+        tools.get(source_url, sha256="23af72468cfd4040984d46a0dd2a609538579c78ddc429d6b8fd7a10a6e24403")
+        os.rename("cpptoml-{!s}".format(self.version), self.source_subfolder)
+
+        tools.replace_in_file("{0}/CMakeLists.txt".format(self.source_subfolder),
             "list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/deps/meta-cmake)",
             "")
-
-        #Rename to "source_subfolder" is a convention to simplify later steps
-        os.rename(extracted_dir, self.source_subfolder)
 
     def build(self):
         cmake = CMake(self)
